@@ -1,8 +1,6 @@
-# Entornos virtuales
+# Backend - Python
 .venv/
-
-# Caches de Python
-app/__pycache__/
+__pycache__/
 *.pyc
 
 # Archivos de configuración de IDEs
@@ -10,3 +8,5 @@ app/__pycache__/
 
 # Archivos de entorno de desarrollo
 .env
+.env.local
+*.env
