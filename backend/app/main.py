@@ -1,5 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Query, Path
 from enum import Enum
+from typing import Annotated
 
 app =  FastAPI()
 
@@ -30,3 +31,34 @@ class Modelo(str, Enum):
 @app.get("/modelos/{nombre_modelo}")
 def obtener_modelo(nombre_modelo: Modelo):
     return {"modelo" : nombre_modelo}
+
+
+#----- Query Parameters --------#
+# Parametros dentro de la URL que no son rutas
+
+class Status(str, Enum):
+    de_buenas = "de buenas"
+    de_malas = "de malas"
+
+@app.get("/{persona}")
+def read_description(persona: str, status: Status):
+    if persona.strip().lower() == "jhon":
+        if status == "de malas":
+            return f"{persona.capitalize()} está muy de malas y le toca las migajas de probabilidad :(."
+        return f"{persona.capitalize()} está muy de buenas y va a cinquearse proba."
+    return f"No sé quién sea usted, señor/a {persona.capitalize()}"
+
+@app.get("/numero/{numero}")
+def read_numero(
+    numero: Annotated[int, Path(title="El Numero", ge=0)],
+    message: Annotated[str | None, Query(min_length=1, max_length=20)] = None
+): 
+    return {"numero":numero, "mensaje":message}
+
+@app.get("/productos/{product_id}")
+def read_product(
+    product_id: Annotated[int, Path(title="ID de Producto", gt=0)],
+    nombre: Annotated[str | None, Query(min_length=3)] = None,
+    disponible: bool = True
+):
+    return {"ID Producto":product_id, "Nombre":nombre, "Disponible":disponible}
