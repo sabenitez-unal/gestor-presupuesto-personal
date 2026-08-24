@@ -9,6 +9,7 @@ router = APIRouter(
     tags=["usuarios"]
 )
 
+# Almacenamiento de usuarios ----volátil----
 usuarios: list[PersonaSalida] = []
 
 # Consultar lista de usuarios
