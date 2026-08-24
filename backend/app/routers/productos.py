@@ -14,7 +14,7 @@ productos: list[ProductoSalida] = []
 counter = 0
 
 # Enlistado de productos
-@router.get("/", response_model=ProductoSalida)
+@router.get("/", response_model=list[ProductoSalida])
 def listar_productos():
     return productos
 
