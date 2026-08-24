@@ -29,7 +29,7 @@ def leer_producto(producto_id: Annotated[int, Path(title="ID de Producto", ge=0)
 @router.post("/", response_model=ProductoSalida)
 def nuevo_producto(producto: Producto):
     global counter
-    nuevo = ProductoSalida(**producto.model_dump(), id=counter)
-    productos.append(nuevo)
+    nuevo_producto = ProductoSalida(id=counter, **producto.model_dump(), disponibilidad=True)
+    productos.append(nuevo_producto)
     counter += 1
-    return nuevo
+    return nuevo_producto
