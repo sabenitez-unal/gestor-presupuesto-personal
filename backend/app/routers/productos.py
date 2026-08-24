@@ -19,7 +19,7 @@ def listar_productos():
     return productos
 
 # Obtener un producto específico
-@router.get("/{product_id}", response_model=ProductoSalida)
+@router.get("/{producto_id}", response_model=ProductoSalida)
 def leer_producto(producto_id: Annotated[int, Path(title="ID de Producto", ge=0)]):
     for p in productos:
         if p.id == producto_id: return p
