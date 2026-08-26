@@ -13,21 +13,6 @@ router = APIRouter(
 productos: list[ProductoSalida] = []
 counter = 0
 
-# Enlistado de productos
-@router.get("/", response_model=list[ProductoSalida])
-def listar_productos():
-    return productos
-
-# Obtener un producto específico
-@router.get("/{producto_id}", response_model=ProductoSalida)
-def leer_producto(producto_id: Annotated[int, Path(title="ID de Producto", ge=0)]):
-    for p in productos:
-        if p.id == producto_id: return p
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail="El producto especificado no existe."
-    ) # <-- manejo de errores HTTP
-
 # Agregar un nuevo producto
 @router.post("/", response_model=ProductoSalida, status_code=status.HTTP_201_CREATED)    # <- Solicitudes POST siempre entregan código 201 (Created)
 def nuevo_producto(producto: Producto):
@@ -45,3 +30,30 @@ def nuevo_producto(producto: Producto):
     productos.append(nuevo_producto)
     counter += 1
     return nuevo_producto
+
+# Enlistado de productos
+@router.get("/", response_model=list[ProductoSalida])
+def listar_productos():
+    return productos
+
+# Obtener un producto específico
+@router.get("/{producto_id}", response_model=ProductoSalida)
+def leer_producto(producto_id: Annotated[int, Path(title="ID de Producto", ge=0)]):
+    for p in productos:
+        if p.id == producto_id: return p
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="El producto especificado no existe."
+    ) # <-- manejo de errores HTTP
+
+# Eliminar algún recurso
+@router.delete("/{producto_id}", status_code=status.HTTP_204_NO_CONTENT)
+def eliminar_producto(producto_id: Annotated[int, Path(title="ID de Producto", ge=0)]):
+    for i, p in enumerate(productos):   # <- Para tomar tanto elemento de la lista como su índice
+        if p.id == producto_id: 
+            productos.pop(i)
+            return
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="El producto especificado no existe."
+    )
