@@ -14,7 +14,12 @@ productos: list[ProductoSalida] = []
 counter = 0
 
 # Agregar un nuevo producto
-@router.post("/", response_model=ProductoSalida, status_code=status.HTTP_201_CREATED)    # <- Solicitudes POST siempre entregan código 201 (Created)
+@router.post(
+    "/", 
+    response_model=ProductoSalida, 
+    status_code=status.HTTP_201_CREATED,
+    responses={409: {"description": "Product already exists"}}
+)    # <- Solicitudes POST siempre entregan código 201 (Created)
 def nuevo_producto(producto: Producto):
     # Comprobar duplicados
     for p in productos:
@@ -37,7 +42,11 @@ def listar_productos():
     return productos
 
 # Obtener un producto específico
-@router.get("/{producto_id}", response_model=ProductoSalida)
+@router.get(
+    "/{producto_id}", 
+    response_model=ProductoSalida,
+    responses={404: {"description":"Product was not found"}}
+)
 def leer_producto(producto_id: Annotated[int, Path(title="ID de Producto", ge=0)]):
     for p in productos:
         if p.id == producto_id: return p
@@ -47,7 +56,11 @@ def leer_producto(producto_id: Annotated[int, Path(title="ID de Producto", ge=0)
     ) # <-- manejo de errores HTTP
 
 # Eliminar algún recurso
-@router.delete("/{producto_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/{producto_id}", 
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={404: {"description":"Product was not found"}}
+)
 def eliminar_producto(producto_id: Annotated[int, Path(title="ID de Producto", ge=0)]):
     for i, p in enumerate(productos):   # <- Para tomar tanto elemento de la lista como su índice
         if p.id == producto_id: 

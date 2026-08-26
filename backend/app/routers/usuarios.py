@@ -21,7 +21,7 @@ def leer_usuarios():
 @router.get(
     "/{documento}", 
     response_model=PersonaResponse,
-    responses={404: {"description":"Usuario no encontrado"}}
+    responses={404: {"description":"User was not found"}}
 )
 def consultar_usuario(
     documento: Annotated[str, Path(title="No. Documento", min_length=8, max_length=10, pattern="^[0-9]+$")]
@@ -29,8 +29,8 @@ def consultar_usuario(
     for usuario in usuarios:
         if documento == usuario.documento: return usuario
     raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="El usuario no existe."
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="El usuario no existe."
     ) # <-- Pendiente de mirar manejo de errores HTTP
 
 # Añadir nuevo usuario
@@ -38,7 +38,7 @@ def consultar_usuario(
     "/", 
     response_model=PersonaResponse,
     status_code=status.HTTP_201_CREATED,
-    responses={409: {"description":"El usuario ya existe"}}
+    responses={409: {"description":"User already exists"}}
 )
 def crear_usuario(usuario: PersonaCreated):
     for u in usuarios:
