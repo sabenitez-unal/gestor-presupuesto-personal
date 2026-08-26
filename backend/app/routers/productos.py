@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Path
+from fastapi import APIRouter, Path, status, HTTPException
 from typing import Annotated
 
 # Esquemas
@@ -23,11 +23,23 @@ def listar_productos():
 def leer_producto(producto_id: Annotated[int, Path(title="ID de Producto", ge=0)]):
     for p in productos:
         if p.id == producto_id: return p
-    return {"err": "Not Found. :("} # <-- Pendiente de mirar manejo de errores HTTP
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="El producto especificado no existe."
+    ) # <-- manejo de errores HTTP
 
 # Agregar un nuevo producto
-@router.post("/", response_model=ProductoSalida)
+@router.post("/", response_model=ProductoSalida, status_code=status.HTTP_201_CREATED)    # <- Solicitudes POST siempre entregan código 201 (Created)
 def nuevo_producto(producto: Producto):
+    # Comprobar duplicados
+    for p in productos:
+        if p.nombre == producto.nombre: 
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=f"El producto '{producto.nombre}' ya existe."
+            )
+
+    # Si no hay duplicados, añadir.
     global counter
     nuevo_producto = ProductoSalida(id=counter, **producto.model_dump(), disponibilidad=True)
     productos.append(nuevo_producto)
